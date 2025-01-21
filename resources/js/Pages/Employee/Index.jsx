@@ -4,6 +4,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import FlashMessage from '@/Components/FlashMessage';
 import { usePage } from '@inertiajs/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPerson } from '@fortawesome/free-solid-svg-icons';
+import { faPersonDress } from '@fortawesome/free-solid-svg-icons';
 
 // query ค่าที่ส่งมาจาก Controller
 // employees ค่าที่ส่งมาจาก Controller
@@ -23,6 +26,12 @@ export default function Index({ employees, query }) {
     const [sortConfig, setSortConfig] = useState({ key: 'emp_no', direction: 'ascending' });
     // ฟังก์ชันสำหรับการจัดเรียงข้อมูล
     const sortedEmployees = [...employees.data].sort((a, b) => {
+        console.log("🚀 ~ sortedEmployees ~ employees:", employees)
+        
+        
+        if (a[sortConfig.key] < b[sortConfig.key]) {
+            return sortConfig.direction === 'ascending' ? -1 : 1; //ให้ a อยู่ก่อน b
+        }
         if (a[sortConfig.key] > b[sortConfig.key]) {
             return sortConfig.direction === 'ascending' ? -1 : 1; //ให้ b อยู่ก่อน a
         }
@@ -50,15 +59,14 @@ export default function Index({ employees, query }) {
         const currentPage = employees.current_page;
         const lastPage = employees.last_page;
         const paginationLinks = [];
-
-        // ถ้าหน้าปัจจุบันมากกว่า 1 ให้แสดงปุ่ม Previous
+        // ถ้าหน้าปัจจุบันมากกว่า 1 ให้แสดงปุ่ม Back
         if (currentPage > 1) {
             paginationLinks.push(
                 <button
                     key="prev"
-                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    className="relative inline-flex items-center rounded-l-md px-2 py-2 text-black ring-1 ring-inset ring-gray-300 hover:ring-gray-500 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                     onClick={() => window.location.assign(employees.prev_page_url)}>
-                    Previous
+                    Back
                 </button>
             );
         }
@@ -85,8 +93,8 @@ export default function Index({ employees, query }) {
                 // สร้างปุ่มสำหรับแต่ละหน้า
                 <button
                     key={i} // กำหนด key สำหรับแต่ละปุ่มเพื่อให้ React สามารถติดตามแต่ละปุ่มได้
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0 ${i === currentPage ? 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-500 focus:outline-offset-0' : ''}`} // กำหนดคลาส CSS สำหรับปุ่ม ถ้าเป็นหน้าปัจจุบันให้เพิ่มคลาส 'active'
-                    onClick={() => window.location.assign(`http://127.0.0.1:8000/employee?page=${i}`)}// เมื่อคลิกปุ่ม ให้เปลี่ยนหน้าไปยัง URL ของหน้านั้น
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-white focus:outline-offset-0 ${i === currentPage ? 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-500 hover:bg-white focus:outline-offset-0' : ''}`} // กำหนดคลาส CSS สำหรับปุ่ม ถ้าเป็นหน้าปัจจุบันให้เพิ่มคลาส 'active'
+                    onClick={() => window.location.assign(`http://127.0.0.1:8000/employee?page=${i}`)} // เมื่อคลิกปุ่ม ให้เปลี่ยนหน้าไปยัง URL ของหน้านั้น
                 >
                     {i}
                 </button>
@@ -98,8 +106,9 @@ export default function Index({ employees, query }) {
             paginationLinks.push(<span key="ellipsis2"
                 className='relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0'>...</span>);
             paginationLinks.push(
-                <button key={lastPage} className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0"
-                onClick={() => window.location.assign(employees.last_page_url)}>
+                <button key={lastPage} 
+                    className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-white focus:outline-offset-0" 
+                    onClick={() => window.location.assign(employees.last_page_url)}>
                     {lastPage}
                 </button>
             );
@@ -108,10 +117,13 @@ export default function Index({ employees, query }) {
         // ถ้าหน้าปัจจุบันน้อยกว่าหน้าสุดท้าย ให้แสดงปุ่ม Next
         if (currentPage < lastPage) {
             paginationLinks.push(
-                <button key="next" className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                onClick={() => window.location.assign(employees.next_page_url)}>
+                <button
+                    key="prev"
+                    className="relative inline-flex items-center rounded-r-md px-2 py-2 text-black ring-1 ring-inset ring-gray-300 hover:ring-gray-500 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                    onClick={() => window.location.assign(employees.prev_page_url)}>
                     Next
                 </button>
+                
             );
         }
 
@@ -140,71 +152,88 @@ export default function Index({ employees, query }) {
                                 type="text"
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="block w-full rounded-lg bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 mr-6"
+                                className="block w-full rounded-lg bg-white px-3.5 py-2 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 mr-6"
                             />
-                            <button type="submit" className="block rounded-xl bg-grey-300-600 px-3.5 py-2.5 text-center text-sm font-semibold text-indigo-700 shadow-sm hover:text-white hover:bg-indigo-600 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600 border border-indigo-600">
-                                Search
+                            <button type="submit" className="cursor-pointer block rounded-xl bg-grey-300-600 px-3.5 py-2.5 text-center text-sm font-semibold text-blue-700 shadow-sm hover:text-white hover:bg-blue-600 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600 border border-blue-600">
+                              <label className='cursor-pointer'>Search</label> 
                             </button>
                         </form>
                     </div>
 
                     {/* ตารางแสดงข้อมูลพนักงาน */}
                     {sortedEmployees.length > 0 ? (
+                        <div className='shadow-lg rounded-lg overflow-hidden mx-4 md:mx-10'>
                         <table className="min-w-full divide-y divide-gray-200 ">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th
+                        <thead className="bg-gray-200">
+                            <tr>
+                                
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-base font-bold text-black uppercase tracking-wider cursor-pointer"
+                                    onClick={() => requestSort('emp_no')}
+                                >
+                                    <div> 
+                                        ID  {sortConfig.direction === 'ascending' && '↑'}
+                                            {sortConfig.direction === 'descending' && '↓'}
+                                    </div>  
+                                    
+                                </th>
+                                <th
+                                    scope="col"
+                                    className="px-6 py-3 text-left text-basefont-medium text-black uppercase tracking-wider"
+                                >
+                                    FirstName
+                                </th>
+                                <th
                                         scope="col"
-                                        className="px-6 py-3 text-left text-base font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
-                                        onClick={() => requestSort('emp_no')}
-                                    >
-                                        ID ↑↓
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-basefont-medium text-gray-600 uppercase tracking-wider"
-                                    >
-                                        Name
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-base font-medium text-gray-600 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-basefont-medium text-black uppercase tracking-wider"
                                     >
                                         LastName
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-6 py-3 text-left text-base font-medium text-gray-600 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-basefont-medium text-black uppercase tracking-wider"
                                     >
-                                        Birth Day
+                                        Birth
                                     </th>
                                     <th
                                         scope="col"
-                                        className="px-6 py-3 text-left text-base font-medium text-gray-600 uppercase tracking-wider"
+                                        className="px-6 py-3 text-left text-basefont-medium text-black uppercase tracking-wider"
                                     >
-                                        รูปภาพ
+                                        Gender
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-basefont-medium text-black uppercase tracking-wider"
+                                    >
+                                        Image
                                     </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {sortedEmployees.map((employee) => (
-                                    <tr key={employee.emp_no}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{employee.emp_no}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.first_name}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.last_name}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.birth_date}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <tr className='hover:bg-gray-200' key={employee.emp_no}>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{employee.emp_no}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{employee.first_name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{employee.last_name}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{employee.birth_date}</td>
+                                    <td className="pe-6 ps-12 py-4 whitespace-nowrap text-sm text-gray-500">
+                                       {employee.gender == 'M' && <FontAwesomeIcon icon={faPerson} size="2x" className="text-sky-400" />}
+                                       {employee.gender == 'F' && <FontAwesomeIcon icon={faPersonDress} size="2x" className="text-pink-400" />}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                             {employee.img && <img src={employee.img} className="w-10 h-10 rounded-full" />}
                                         </td>
                                     </tr>
                                 ))}         
                             </tbody>
                         </table>
+                        </div>
                     ) : (
                         <div>
-                            <p className='text-lg font-bold flex justify-center mt-16'>No employees found.</p>
+                            <p className='text-lg font-bold flex justify-center mt-16'>Not Found.</p>
                             <div className="flex justify-center mt-10">
-                                <button onClick={() => window.history.back()} className='inline-flex items-center rounded-md bg-indigo-50 px-2 py-1 text-base font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10'>Back</button>
+                                <button onClick={() => window.history.back()} className='inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-base font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10'>Back</button>
                             </div>
                         </div>
                     )}

@@ -24,7 +24,7 @@ class EmployeeController extends Controller
         $employees = DB::table('employees')
         ->where('first_name', 'like', '%'.$query.'%')
         ->orWhere('last_name', 'like', '%'.$query.'%')
-        ->orderBy('emp_no', 'desc')
+        //->orderBy('emp_no', 'desc')
         ->paginate(20);
 
         //Log::info($employees);
