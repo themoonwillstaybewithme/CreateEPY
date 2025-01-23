@@ -222,8 +222,9 @@ export default function Index({ employees, query }) {
                                        {employee.gender == 'F' && <FontAwesomeIcon icon={faPersonDress} size="2x" className="text-pink-400" />}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {employee.img && <img src={employee.img} className="w-10 h-10 rounded-full" />}
+                                            <img src={employee.img} className="w-10 h-10 rounded-full" />
                                         </td>
+                                    
                                     </tr>
                                 ))}         
                             </tbody>

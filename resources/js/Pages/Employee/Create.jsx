@@ -2,12 +2,12 @@ import { useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import FlashMessage from '@/Components/FlashMessage';
+import FlashMessage from '@/Components/FlashMessage'; // นำเข้า FlashMessage
 import { usePage } from '@inertiajs/react';
 
 const CreateEmployee = ({ departments }) => {
     const { data, setData, post, errors,processing } = useForm({
-        first_name: '',
+        first_name: '', // กำหนดค่าเริ่มต้นของแต่ละ field
         last_name: '',
         birth_date: '',
         gender: '',
@@ -24,13 +24,12 @@ const CreateEmployee = ({ departments }) => {
         });
     };
 
-    const { flash } = usePage().props;
+    const { flash } = usePage().props; // ดึงค่า flash จาก props ของ usePage
 
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const path = URL.createObjectURL(file); 
-            data.img = path; // กำหนด path ไปยัง data.img
+    const handleFileChange = (e) => { // ฟังก์ชัน handleFileChange สำหรับจัดการเมื่อไฟล์ถูกเปลี่ยน
+        const file = e.target.files[0]; // ดึงไฟล์แรกจาก input
+        if (file) { // ถ้ามีไฟล์
+            setData('img', file); // ให้เซ็ตค่าของ img ให้เป็นไฟล์ที่เลือก
         }
     };
 
@@ -117,8 +116,12 @@ const CreateEmployee = ({ departments }) => {
                     </div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">รูปภาพ:</label>
-                        <input type="file" accept="image/*" onChange={handleFileChange} />
-                        {errors.img && <div>{errors.img}</div>}
+                        <input
+                        type="file" // กำหนด type เป็น file
+                        accept="image/*" // กำหนดให้รับไฟล์รูปภาพเท่านั้น
+                        onChange={handleFileChange}
+                        />
+                        {errors.img && <div className='text-red-500 text-sm'>{errors.img}</div>}
                     </div>
                     <div className="flex justify-end mt-7">
                     <button type="submit" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Finish</button>
